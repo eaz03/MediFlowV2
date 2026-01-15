@@ -9,7 +9,6 @@ urlpatterns = [
     path('administrator/', include('administrator.urls')),  # Incluye URLs de administrador
     path('exam/', include('exam.urls')),
     path('statistics/', include('statistic.urls')),
-    path('dataProcessing/', include('dataProcessing.urls')),
 ]
 
 if settings.DEBUG:

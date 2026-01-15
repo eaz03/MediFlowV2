@@ -1,34 +1,28 @@
 from django.shortcuts import render, redirect, get_object_or_404, HttpResponse
-from .forms import * # Importación de los formularios
-from .models import Exam, Patient
-from ophthalmologist.models import Ophthalmologist
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.conf import settings
+from django.http import JsonResponse
+
+from .forms import * # Importación de los formularios
 from .forms import UploadExamForm # Importación de los formularios
+
+from .models import Exam, Patient
+from ophthalmologist.models import Ophthalmologist
+
 from exam.utils.generate_analysis import generate_analysis_pdf
-from exam.utils.send_email import send_email
 from exam.utils.text_extraction import text_extraction, extract_multiple, concatenate_pdf, add_excel_info
 from exam.utils.calculate_age import calculate_age
 from exam.utils.bulk_insertion_helpers import process_folder_structure, save_extracted_patient, save_extracted_exam, get_new_exam_path
+
 from PyPDF2 import PdfReader, PdfWriter
 import os
 import json
 from datetime import datetime
-from django.contrib.auth.decorators import login_required
-
-from django.views.decorators.csrf import csrf_exempt
-from django.conf import settings
-
-from ophthalmologist.views import menu
-
-
-from django.middleware.csrf import get_token
-
-from django.http import JsonResponse
 
 MEDIA_ROOT = settings.MEDIA_ROOT
 
-# Create your views here.
 @login_required
 def new_exam(request):
     if request.method == 'POST':
@@ -277,32 +271,3 @@ def add_password_to_pdf(input_pdf, output_pdf, password):
 
     with open(output_pdf, 'wb') as output_file:
         writer.write(output_file)
-
-def email_view(request, pk):
-    exam = get_object_or_404(Exam, pk=pk)
-    patient = exam.patient
-    if request.method == 'POST':
-        recipient = patient.email
-        user_id = 1 # Hardcoded, cambiar a perfil del doctor
-        subject = f'Resultado de OCT {exam.exam_type} - {patient.name} {patient.last_name}' # Cambiar a datos de la clinica
-        body = '''Buenos días,
-                  Adjunto encontrará el resultado de su examen de OCT.
-
-                    Saludos cordiales,
-                    [Nombre de la clínica]
-                '''
-        attachment_path = f'media/{exam.exam_type}_{patient.name}_{patient.last_name}.pdf'
-
-        password = "hola"
-        protected_attachment_path = f'media/protected_{exam.exam_type}_{patient.name}_{patient.last_name}.pdf'
-        add_password_to_pdf(attachment_path, protected_attachment_path, password)
-
-        result = send_email(user_id, recipient, subject, body, protected_attachment_path)
-        if result["status"] == "success":
-            messages.success(request, f'Email enviado exitosamente a {recipient}')
-            return redirect('view_pdf', pk=pk)
-        else:
-            messages.warning(request, f'Error al enviar el email a {recipient}: {result["message"]}')
-            return redirect('view_pdf', pk=pk)
-    else:
-        return redirect('view_pdf', pk=pk)

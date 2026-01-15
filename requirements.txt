@@ -11,12 +11,6 @@ Django==5.1
 et-xmlfile==1.1.0
 fonttools==4.53.1
 fpdf2==2.7.9
-google-api-core==2.19.2
-google-api-python-client==2.143.0
-google-auth==2.34.0
-google-auth-httplib2==0.2.0
-google-auth-oauthlib==1.2.1
-googleapis-common-protos==1.65.0
 httplib2==0.22.0
 idna==3.8
 kiwisolver==1.4.7
