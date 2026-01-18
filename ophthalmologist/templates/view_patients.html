@@ -148,6 +148,26 @@
                 {% empty %}
                     <td></td>
                     <td></td>
+                    <td>
+                        <div class="no-exam">
+                            <p>No exams</p>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="actions">
+                            <a href="{% url 'edit_patient' patient.identification %}">
+                                <button class="edit-btn">
+                                    Edit Patient
+                                </button>
+                            </a>
+                            <form method="post" action="{% url 'ophthalmologist_delete_patient' patient.id %}" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="delete-btn">
+                                    Delete Patient
+                                </button>
+                            </form>
+                        </div>
+                    </td>
                 {% endfor %}
             </tr>
             {% empty %}

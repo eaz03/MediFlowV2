@@ -12,12 +12,13 @@ def text_extraction(file_content):
     with pdfplumber.open(io.BytesIO(file_content)) as pdf:
         first_page = pdf.pages[0]
         text = first_page.extract_text()
+
         id = re.search("(?:(?<=ID:)|(?<=ID de paciente))\s?[0-9]+", text)
-        name = re.search("(?<=Name:)\s?.* .*, \w+|(?<=Nombre:)\s?.* .*, .*?(?=OD|OS)|(?<=Paciente)\s?BAENA.* .*, \w+", text)
+        name = re.search("(?<=Name:)\s?.* .*, \w+|(?<=Nombre:)\s?.* .*, .*?(?=OD|OS)|([A-Za-záéíóúüñ ]+),\s+([A-Za-záéíóúüñ ]+)(?=\s+Paciente)", text)
         birthdate = re.search("(?<=DOB:)\s?..-...-..|(?<=Fecha de nacimiento:)\s?[0-9]{1,2}/[0-9]{2}/[0-9]{4}|(?<=DOB)\s?[0-9]{1,2}/[0-9]{2}/[0-9]{4}", text)
         exam_date = re.search("(?<=Exam Date:)\s?..-...-..|(?<=Fecha de examen:)\s?[0-9]{1,2}/[0-9]{2}/[0-9]{4}", text)
         gender = re.search("(?<=Gender:)\s?\w+|(?<=Sexo:)\s?\w+|(?<=Género)\s?\w+", text)
-        name = name.group().strip() if name else ''
+        name = name.group().strip() if name else '' 
         id = id.group().strip() if id else ''
         birthdate = birthdate.group().strip() if birthdate else ''
         exam_date = exam_date.group().strip() if exam_date else ''
@@ -26,7 +27,7 @@ def text_extraction(file_content):
         try:
             birthdate = datetime.datetime.strptime(birthdate, '%d-%b-%y').date() if birthdate else ''
             exam_date = datetime.datetime.strptime(exam_date, '%d-%b-%y').date() if exam_date else ''
-        except:
+        except: 
             try:
                 birthdate = datetime.datetime.strptime(birthdate, '%d/%m/%Y').date() if birthdate else ''
                 exam_date = datetime.datetime.strptime(exam_date, '%d/%m/%Y').date() if exam_date else ''
@@ -34,11 +35,15 @@ def text_extraction(file_content):
                 birthdate = ''
                 exam_date = ''
 
-        last_name = name.split(", ")[0].strip().capitalize() if name else ''
-        last_name = ' '.join(word.capitalize() for word in last_name.split())
+        try:
+            last_name = name.split(", ")[0].strip().capitalize() if name else ''
+            last_name = ' '.join(word.capitalize() for word in last_name.split())
 
-        name = name.split(", ")[1].strip().capitalize() if name else ''
-        name = ' '.join(word.capitalize() for word in name.split() if word != 'de' or word != 'la' or word != 'del')
+            name = name.split(", ")[1].strip().capitalize() if name else ''
+            name = ' '.join(word.capitalize() for word in name.split() if word != 'de' or word != 'la' or word != 'del')
+        except:
+            last_name = ''
+            name = name
 
         return {
             "id": id,
