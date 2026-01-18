@@ -192,6 +192,26 @@ tr:nth-child(even) td {
     transition: background-color 0.3s;
 }
 
+.delete-btn {
+    font-size: 15px;
+    border: none;
+    height: 29px;
+    border-radius: 18px;
+    color: #ffffff;
+    cursor: pointer;
+    padding: 2px 15px;
+    text-wrap: nowrap;
+    background-color: #D32F2F;
+    font-weight: 500;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    transition: background-color 0.3s;
+}
+
+.delete-btn:hover {
+    background-color: #B71C1C;
+}
+
 .pagination{
     width: 100%;
     display: flex;
@@ -237,11 +257,96 @@ tr:nth-child(even) td {
 }
 
 @media (max-width: 864px){
-    .edit-btn, .delete-btn{
-        margin-top: 5px;
-        margin-bottom: 5px;
-    }
     .logo-name{
         display: none;
     }
+}
+.doctor-filter {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #f5f5f5;
+    border-radius: 5px;
+}
+
+.doctor-filter label {
+    font-weight: bold;
+    color: #1C2E45;
+}
+
+.doctor-filter select {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: white;
+    color: #1C2E45;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.doctor-filter select:hover {
+    border-color: #1C2E45;
+}
+
+.doctor-filter select:focus {
+    outline: none;
+    border-color: #1C2E45;
+    box-shadow: 0 0 5px rgba(28, 46, 69, 0.2);
+}
+
+.filter-select, .search-btn {
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    padding: 10px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    background-color: white;
+    color: #1C2E45;
+}
+
+.filter-select:hover, .search-btn:hover {
+    border-color: #1C2E45;
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: #1C2E45;
+    box-shadow: 0 0 5px rgba(28, 46, 69, 0.2);
+}
+
+.filter-btn {
+    background-color: #839DD1;
+    font-size: 15px;
+    border: none;
+    height: 29px;
+    border-radius: 18px;
+    color: #eeeded;
+    cursor: pointer;
+    padding: 2px 15px;
+    text-wrap: nowrap;
+    margin-left: 10px;
+}
+
+.filter-btn:hover {
+    background-color: #6a80c1;
+    transition: background-color 0.3s;
+}
+
+.search-btn {
+    background-color: #839DD1;
+    color: #eeeded;
+    font-size: 15px;
+    height: 29px;
+    border-radius: 18px;
+    padding: 2px 15px;
+    margin-left: 10px;
+    text-wrap: nowrap;
+}
+
+.search-btn:hover {
+    background-color: #6a80c1;
+    transition: background-color 0.3s;
+}
 }

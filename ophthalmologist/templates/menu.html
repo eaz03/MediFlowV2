@@ -70,6 +70,25 @@
 </div>
 
 <div class="module-wrapper">
+        <a href="{% url 'view_patients' %}" class="module-container">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M4 4H8V8H4V4Z" fill="#1C2E45"/>
+                <path d="M4 10H8V14H4V10Z" fill="#1C2E45"/>
+                <path d="M4 16H8V20H4V16Z" fill="#1C2E45"/>
+                <path d="M10 4H14V8H10V4Z" fill="#1C2E45"/>
+                <path d="M10 10H14V14H10V10Z" fill="#1C2E45"/>
+                <path d="M10 16H14V20H10V16Z" fill="#1C2E45"/>
+                <path d="M16 4H20V8H16V4Z" fill="#1C2E45"/>
+                <path d="M16 10H20V14H16V10Z" fill="#1C2E45"/>
+                <path d="M16 16H20V20H16V16Z" fill="#1C2E45"/>
+            </svg>
+            <h1>
+                Visualize Patients
+            </h1>
+        </a>
+    </div>
+
+<div class="module-wrapper">
     <a href="{% url 'statistics' %}" class="module-container">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
             <path d="M5 19V4H4V20H20V19H5Z" fill="#1C2E45"/>
@@ -97,7 +116,7 @@
                 <path d="M16 16H20V20H16V16Z" fill="#1C2E45"/>
             </svg>
             <h1>
-                Visualize Patients
+                View Patients
             </h1>
         </a>
     </div>
@@ -124,6 +143,18 @@
             </h1>
         </a>
     </div>
+</div>
+
+<div class="module-wrapper">
+    <a href="{% url 'statistics' %}" class="module-container">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M5 19V4H4V20H20V19H5Z" fill="#1C2E45"/>
+            <path d="M14 11C12 11 11.92 10 10 10C7.66 10 6 13 6 13V18H20V6C18 6 16.14 11 14 11Z" fill="#1C2E45"/>
+        </svg>
+        <h1>
+            Statistics
+        </h1>
+    </a>
 </div>
 {% endif %}
 

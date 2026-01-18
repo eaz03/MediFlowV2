@@ -18,6 +18,12 @@ class CustomUserCreationForm(forms.ModelForm):
         return user
 
 class AddOphthalmologistForm(forms.ModelForm):
+    password = forms.CharField(
+        widget=forms.PasswordInput,
+        label="Password",
+        help_text="Set a secure password for this ophthalmologist"
+    )
+
     class Meta:
         model = Ophthalmologist
         fields = ['id', 'name', 'last_name', 'email', 'medical_license', 'specialty']
@@ -37,8 +43,8 @@ class AddOphthalmologistForm(forms.ModelForm):
                 ophthalmologist=ophthalmologist
             )
             
-            # Generar la contraseña (por ejemplo, basada en nombre y apellido)
-            raw_password = f"{ophthalmologist.name}{ophthalmologist.last_name}".replace(" ", "").lower()
+            # Usar la contraseña ingresada por el administrador
+            raw_password = self.cleaned_data.get('password')
             
             # Guardar la contraseña de manera segura
             user.set_password(raw_password)

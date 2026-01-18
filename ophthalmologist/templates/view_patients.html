@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="{% static 'styles/back_button.css' %}">
 {% endblock %}
 
-{% block title %}Patient Pannel{% endblock %}
+{% block title %}Patient Panel{% endblock %}
 
 {% block return %}
 <a href="{% url 'menu' %}" class="back-link">
@@ -32,11 +32,25 @@
 {% endif %}
 
 <div class="table-container patient-table">
-    <form class="search-container">
+    <form class="search-container" method="get">
         <h1>Patients</h1>
+        {% if user.is_superuser and doctors %}
+        <div class="doctor-filter">
+            <select id="doctor-select" name="doctor" class="filter-select">
+                <option value="">All Doctors</option>
+                {% for doc in doctors %}
+                    <option value="{{ doc.id }}" {% if selected_doctor_id|add:"0" == doc.id|add:"0" %}selected{% endif %}>
+                        {{ doc.name }} {{ doc.last_name }}
+                    </option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="filter-btn">Filter</button>
+        </div>
+        {% endif %}
         <div class="search-bar">
             <p>Search:</p>
             <input type="text" name="searchPatient" value="{{ request.GET.searchPatient }}">
+            <button type="submit" class="search-btn">Search</button>
         </div>
     </form>
 
@@ -91,6 +105,12 @@
                                     Edit Analysis
                                 </button>
                             </a>
+                            <form method="post" action="{% url 'ophthalmologist_delete_patient' patient.id %}" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="delete-btn">
+                                    Delete Patient
+                                </button>
+                            </form>
                         </div>
                     </td>
                     {% else %}
@@ -115,6 +135,12 @@
                                     Analyze Exam
                                 </button>
                             </a>
+                            <form method="post" action="{% url 'ophthalmologist_delete_patient' patient.id %}" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="delete-btn">
+                                    Delete Patient
+                                </button>
+                            </form>
                         </div>
                     </td>
                     {% endif %}

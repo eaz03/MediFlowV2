@@ -208,6 +208,7 @@ def bulk_insertion(request):
         files = request.FILES.getlist('examFolders')
         csv_file = request.FILES.get('patientCSV')
         folder_structure = request.POST.get('folderStructure')
+        print("Folder structure:", folder_structure)
         # ophtalmologist = request.user.ophtalmologist
 
         folder_structure = json.loads(folder_structure)

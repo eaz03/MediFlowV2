@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404, HttpResponse
 from .forms import * # Importación de los formularios
 from .forms import Patient, LoginForm
 from exam.models import Exam
+
+from ophthalmologist.models import Ophthalmologist
 from django.conf import settings
 from django.contrib import messages
 from .forms import UploadFileForm, AddPatientForm # Importación de los formularios
@@ -11,6 +13,7 @@ from datetime import datetime
 from django.contrib.auth import authenticate, login as auth_login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
+from django.contrib.auth.forms import PasswordChangeForm
 from django.core.paginator import Paginator
 
 from exam.utils.text_extraction import add_excel_info
@@ -49,24 +52,41 @@ def logout_view(request):
 
 @login_required
 def view_patients(request):
-    if request.user.is_superuser:
-        return redirect('administrator')
-    
     searchPatient = request.GET.get('searchPatient', '')
-    try:
-        doctor = request.user.ophthalmologist
-    except AttributeError:
-        doctor = None
-
-    if doctor:
-        patients = search(searchPatient, doctor)
+    selected_doctor_id = request.GET.get('doctor', '')
+    
+    if request.user.is_superuser:
+        # Admin: allow filtering by doctor
+        if selected_doctor_id:
+            try:
+                patients = Patient.objects.filter(doctor_id=selected_doctor_id)
+            except:
+                patients = Patient.objects.all()
+        else:
+            patients = Patient.objects.all()
+        
+        # Get all doctors for dropdown
+        doctors = Ophthalmologist.objects.all()
     else:
-        patients = []
+        # Ophthalmologist: only their patients
+        doctor = request.user.ophthalmologist
+        patients = search(searchPatient, doctor)
+        doctors = None
+    
+    # Apply search filter if not admin with specific doctor selected
+    if searchPatient and not (request.user.is_superuser and selected_doctor_id):
+        if request.user.is_superuser:
+            try:
+                search_id = int(searchPatient)
+                patients = patients.filter(identification__icontains=str(search_id))
+            except ValueError:
+                patients = patients.filter(name__icontains=searchPatient) | patients.filter(last_name__icontains=searchPatient)
+
     paginator_patients = Paginator(patients, 10)
     files = Exam.objects.all()
     page_number = request.GET.get('page')
     page_patients = paginator_patients.get_page(page_number)
-    return render(request, 'view_patients.html', {'files':files, 'patients': patients, 'searchPatient': searchPatient, 'page_patients': page_patients,})
+    return render(request, 'view_patients.html', {'files':files, 'patients': patients, 'searchPatient': searchPatient, 'page_patients': page_patients, 'doctors': doctors, 'selected_doctor_id': selected_doctor_id})
 
 def search(searchPatient, doctor):
     if not doctor:
@@ -177,6 +197,27 @@ def view_pdf(request, pk):
     else:
         form = UploadFileForm(instance=exam)
     return render(request, 'view_pdf.html', {'form': form, 'file': exam, 'exam_types':exam_types_json, default_analysis: default_analysis})
+
+@login_required
+def delete_patient(request, patient_id):
+    try:
+        patient = Patient.objects.get(id=patient_id)
+    except Patient.DoesNotExist:
+        messages.error(request, 'Patient not found.')
+        return redirect('view_patients')
+    
+    # Security check: only allow deletion by the patient's doctor or admin
+    if not request.user.is_superuser and patient.doctor != request.user.ophthalmologist:
+        messages.error(request, 'You do not have permission to delete this patient.')
+        return redirect('view_patients')
+    
+    if request.method == 'POST':
+        patient_name = f"{patient.name} {patient.last_name}"
+        patient.delete()
+        messages.success(request, f'Patient {patient_name} deleted successfully!')
+        return redirect('view_patients')
+    else:
+        return redirect('view_patients')
 
 @login_required
 def menu(request):
