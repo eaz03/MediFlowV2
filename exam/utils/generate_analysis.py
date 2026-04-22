@@ -2,10 +2,6 @@ from fpdf import FPDF
 import pypdfium2 as pdfium
 from ophthalmologist.models import Ophthalmologist
 
-"""
-doctor=Ophthalmologist(name="Martha Luz", last_name="Zuluaga Posada", email="johndoe@example.com", medical_license="RM-5-1382-97", specialty="Oftalmólogo y Corneólogo CES")
-"""
-
 def generate_analysis_pdf(exam, patient, output_file, doctor, logo="media/clinic_information/logo_clinica.png"):
     class PDF(FPDF):
         def header(self):
