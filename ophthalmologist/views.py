@@ -19,6 +19,7 @@ from django.core.paginator import Paginator
 from exam.utils.text_extraction import add_excel_info
 
 from media.clinic_information.exam_types import exam_types
+from media.clinic_information.devices import devices
 import json
 
 # Create your views here.
@@ -170,33 +171,58 @@ def next_exam(request):
 def view_pdf(request, pk):
     exam = get_object_or_404(Exam, pk=pk)
     exam_types_json = json.dumps(exam_types)
+    exam_types_list = list(exam_types.keys())
+    ophthalmologists = Ophthalmologist.objects.all()
 
     default_analysis = ''
     if request.method == 'POST':
         form = UploadFileForm(request.POST, instance=exam)
         if form.is_valid():
+            # Update patient data
+            patient = exam.patient
+            patient.name = request.POST.get('patient_name')
+            patient.last_name = request.POST.get('patient_last_name')
+            patient.email = request.POST.get('patient_email')
+            patient.phone = request.POST.get('patient_phone')
+            patient.age = request.POST.get('patient_age')
+            patient.date_of_birth = request.POST.get('patient_date_of_birth')
+            patient.gender = request.POST.get('patient_gender')
+            patient.address = request.POST.get('patient_address')
+            patient.health_insurance = request.POST.get('patient_health_insurance')
+            
+            doctor_id = request.POST.get('patient_doctor')
+            if doctor_id:
+                patient.doctor = Ophthalmologist.objects.get(id=doctor_id)
+            
+            patient.save()
+            
+            # Update exam data
             exam.result_analysis = request.POST.get('result_analysis')
             exam.exam_type = request.POST.get('exam_type').capitalize()
-            patient = exam.patient
+            exam.apparatus = request.POST.get('apparatus')
 
-            exam.is_analyzed = True  # Por ejemplo, marcar como analizado una vez se edite
+            exam.is_analyzed = True
             exam.analysis_date = datetime.now()
             # Crear un PDF con el resultado del análisis
             pdf_path = f'media/results/{exam.exam_type}_{patient.name}_{patient.last_name}.pdf'
             generate_analysis_pdf(exam, patient, pdf_path, patient.doctor)
-            #exam.analyzed_path
 
             exam.save()
-            """ response = HttpResponse(fh.read(), content_type="applicaction/pdf")
-            response['Content-Disposition'] = 'inline; filename=' + os.path.basename(pdf_path)
-            return response """
 
-            messages.success(request, 'Analysis saved successfully!')
+            messages.success(request, 'Analysis and patient data saved successfully!')
 
             return redirect('view_patients')
     else:
         form = UploadFileForm(instance=exam)
-    return render(request, 'view_pdf.html', {'form': form, 'file': exam, 'exam_types':exam_types_json, default_analysis: default_analysis})
+    return render(request, 'view_pdf.html', {
+        'form': form, 
+        'file': exam, 
+        'exam_types': exam_types_json, 
+        'exam_types_list': exam_types_list, 
+        'devices_list': devices,
+        'ophthalmologists': ophthalmologists,
+        'default_analysis': default_analysis
+    })
 
 @login_required
 def delete_patient(request, patient_id):

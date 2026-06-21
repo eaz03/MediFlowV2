@@ -8,28 +8,47 @@ main{
 .patient-info {
     display: flex;
     flex-direction: column;
-    width: 500px;
-    gap: 3px;
+    width: 100%;
+    gap: 8px;
+    margin-bottom: 30px;
 }
 
 .patient-info > div {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
+    gap: 15px;
 }
 
 .patient-info strong {
-    flex: 1;
     font-weight: bold;
     width: 150px;
     text-align: right;
-    margin-right: 5px;
+    flex-shrink: 0;
+    color: #1C2E45;
 }
 
-.patient-info p {
+.patient-field {
     flex: 1;
+    max-width: 250px;
+    padding: 8px 12px;
+    border: 1px solid rgb(143, 143, 143);
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: inherit;
+}
+
+.patient-field:focus {
+    border: 1px solid #4a5a89;
+    outline: none;
+    box-shadow: 0 0 5px rgba(74, 90, 137, 0.3);
+}
+
+.patient-info input[type="text"],
+.patient-info input[type="number"],
+.patient-info input[type="date"],
+.patient-info select {
     margin: 0;
-    text-align: left;
 }
 
 .content-wrapper{

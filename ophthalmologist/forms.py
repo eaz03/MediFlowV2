@@ -7,7 +7,7 @@ from django.contrib.auth.forms import AuthenticationForm
 class LoginForm(forms.Form):
     email = forms.CharField(max_length=255, widget=forms.TextInput(attrs={
         'class': 'form-control',
-        'placeholder': 'Enter your email address',
+       'placeholder': 'Enter your email address',
         'id': 'username',
         'name': 'username'
     }))
@@ -55,9 +55,11 @@ class UploadExamForm(forms.ModelForm):
 class AddPatientForm(forms.ModelForm):
     class Meta:
         model = Patient
-        fields = ['identification', 'name', 'last_name', 'email', 'phone', 'date_of_birth', 'gender', 'address', 'health_insurance']
+        fields = ['identification', 'name', 'last_name', 'email', 'phone', 'date_of_birth', 'gender', 'address', 'health_insurance', 'doctor']
         widgets = {
             'date_of_birth': forms.DateInput(attrs={'type': 'date'}),
         }
     def __init__(self, *args, **kwargs):
         super(AddPatientForm, self).__init__(*args, **kwargs)
+        self.fields['doctor'].required = False
+        self.fields['health_insurance'].required = False

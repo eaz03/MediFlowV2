@@ -23,12 +23,40 @@
 
 <h1>Exam Analysis</h1>
 <p>Currently analyzing the exam of <strong>{{ file.patient.name }} {{ file.patient.last_name }}</strong> with identification number <strong>{{ file.patient.identification }}</strong></p>
+
 <div class="patient-info">
-    <div><strong>Age:</strong><p>{{ file.patient.age }}</p></div>
-    <div><strong>Gender:</strong><p>{{ file.patient.gender }}</p></div>
-    <div><strong>Date of birth:</strong><p>{{ file.patient.date_of_birth }}</p></div>
-    <div><strong>Health insurance:</strong><p>{{ file.patient.health_insurance }}</p></div>
-    <div><strong>Date of test result:</strong><p>{{ file.exam_date }}</p></div>
+    <div>
+        <strong>Name:</strong>
+        <input type="text" name="patient_name" class="patient-field" value="{{ file.patient.name }}">
+    </div>
+    <div>
+        <strong>Last Name:</strong>
+        <input type="text" name="patient_last_name" class="patient-field" value="{{ file.patient.last_name }}">
+    </div>
+    <div>
+        <strong>Age:</strong>
+        <input type="number" name="patient_age" class="patient-field" value="{{ file.patient.age|default:'' }}">
+    </div>
+    <div>
+        <strong>Gender:</strong>
+        <select name="patient_gender" class="patient-field">
+            <option value="">Select</option>
+            <option value="Male" {% if file.patient.gender == 'Male' %}selected{% endif %}>Male</option>
+            <option value="Female" {% if file.patient.gender == 'Female' %}selected{% endif %}>Female</option>
+        </select>
+    </div>
+    <div>
+        <strong>Date of Birth:</strong>
+        <input type="date" name="patient_date_of_birth" class="patient-field" value="{{ file.patient.date_of_birth|date:'Y-m-d'|default:'' }}">
+    </div>
+    <div>
+        <strong>Health Insurance:</strong>
+        <input type="text" name="patient_health_insurance" class="patient-field" value="{{ file.patient.health_insurance|default:'' }}">
+    </div>
+    <div>
+        <strong>Date of Test Result:</strong>
+        <input type="date" name="exam_date" class="patient-field" value="{{ file.exam_date|date:'Y-m-d'|default:'' }}">
+    </div>
 </div>
 
 <div class="content-wrapper">
@@ -41,11 +69,21 @@
     <div class="form-wrapper">
         <form method="POST" id="save-analysis" class="form-container">
             {% csrf_token %}
+
             <label for="exam_type" class="form-label"><h3>Exam Type:</h3></label>
             <select name="exam_type" id="exam_type" class="form-select">
                 <option value="" selected></option>
-                <option value="segmento_anterior">Segmento Anterior</option>
-                <option value="nervio_optico">Nervio Óptico</option>
+                {% for exam_type in exam_types_list %}
+                    <option value="{{ exam_type }}" {% if file.exam_type|lower == exam_type|lower %}selected{% endif %}>{{ exam_type|title }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="apparatus" class="form-label"><h3>Device/Apparatus:</h3></label>
+            <select name="apparatus" id="apparatus" class="form-select">
+                <option value="" selected></option>
+                {% for device in devices_list %}
+                    <option value="{{ device }}" {% if file.apparatus == device %}selected{% endif %}>{{ device }}</option>
+                {% endfor %}
             </select>
 
             <label for="result_analysis" class="form-label"><h3>Test Result Analysis:</h3></label>
@@ -78,17 +116,12 @@
         const exam_type = document.getElementById('exam_type');
         const analysis_text_area = document.getElementById('result_analysis');
 
-        const exam_type_variable = "{{ exam_types }}";
         const exam_types = JSON.parse("{{ exam_types|escapejs }}");
-
-        var form = document.getElementById('save-analysis');
-        const form_data = new FormData(form);
 
         exam_type.addEventListener('change', function() {
             for (let element in exam_types) {
                 if (element === exam_type.value) {
                     analysis_text_area.value = exam_types[element];
-                    form_data.append('save_analysis', exam_type.value);
                 }
             }
         });
