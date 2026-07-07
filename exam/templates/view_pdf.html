@@ -27,19 +27,19 @@
 <div class="patient-info">
     <div>
         <strong>Name:</strong>
-        <input type="text" name="patient_name" class="patient-field" value="{{ file.patient.name }}">
+        <input type="text" name="patient_name" class="patient-field" form="save-analysis" value="{{ file.patient.name }}" required>
     </div>
     <div>
         <strong>Last Name:</strong>
-        <input type="text" name="patient_last_name" class="patient-field" value="{{ file.patient.last_name }}">
+        <input type="text" name="patient_last_name" class="patient-field" form="save-analysis" value="{{ file.patient.last_name }}" required>
     </div>
     <div>
         <strong>Age:</strong>
-        <input type="number" name="patient_age" class="patient-field" value="{{ file.patient.age|default:'' }}">
+        <input type="number" name="patient_age" class="patient-field" form="save-analysis" min="0" value="{{ file.patient.age|default:'' }}" required>
     </div>
     <div>
         <strong>Gender:</strong>
-        <select name="patient_gender" class="patient-field">
+        <select name="patient_gender" class="patient-field" form="save-analysis" required>
             <option value="">Select</option>
             <option value="Male" {% if file.patient.gender == 'Male' %}selected{% endif %}>Male</option>
             <option value="Female" {% if file.patient.gender == 'Female' %}selected{% endif %}>Female</option>
@@ -47,15 +47,15 @@
     </div>
     <div>
         <strong>Date of Birth:</strong>
-        <input type="date" name="patient_date_of_birth" class="patient-field" value="{{ file.patient.date_of_birth|date:'Y-m-d'|default:'' }}">
+        <input type="date" name="patient_date_of_birth" class="patient-field" form="save-analysis" value="{{ file.patient.date_of_birth|date:'Y-m-d'|default:'' }}" required>
     </div>
     <div>
         <strong>Health Insurance:</strong>
-        <input type="text" name="patient_health_insurance" class="patient-field" value="{{ file.patient.health_insurance|default:'' }}">
+        <input type="text" name="patient_health_insurance" class="patient-field" form="save-analysis" value="{{ file.patient.health_insurance|default:'' }}" required>
     </div>
     <div>
         <strong>Date of Test Result:</strong>
-        <input type="date" name="exam_date" class="patient-field" value="{{ file.exam_date|date:'Y-m-d'|default:'' }}">
+        <input type="date" name="exam_date" class="patient-field" form="save-analysis" value="{{ file.exam_date|date:'Y-m-d'|default:'' }}" required>
     </div>
 </div>
 
@@ -71,7 +71,7 @@
             {% csrf_token %}
 
             <label for="exam_type" class="form-label"><h3>Exam Type:</h3></label>
-            <select name="exam_type" id="exam_type" class="form-select">
+            <select name="exam_type" id="exam_type" class="form-select" required>
                 <option value="" selected></option>
                 {% for exam_type in exam_types_list %}
                     <option value="{{ exam_type }}" {% if file.exam_type|lower == exam_type|lower %}selected{% endif %}>{{ exam_type|title }}</option>
@@ -79,7 +79,7 @@
             </select>
 
             <label for="apparatus" class="form-label"><h3>Device/Apparatus:</h3></label>
-            <select name="apparatus" id="apparatus" class="form-select">
+            <select name="apparatus" id="apparatus" class="form-select" required>
                 <option value="" selected></option>
                 {% for device in devices_list %}
                     <option value="{{ device }}" {% if file.apparatus == device %}selected{% endif %}>{{ device }}</option>
@@ -87,7 +87,7 @@
             </select>
 
             <label for="result_analysis" class="form-label"><h3>Test Result Analysis:</h3></label>
-            <textarea name="result_analysis" id="result_analysis" class="form-control" rows="20">{{ default_analysis }}{{ file.result_analysis }}</textarea>
+            <textarea name="result_analysis" id="result_analysis" class="form-control" rows="20" required>{{ default_analysis }}{{ file.result_analysis }}</textarea>
 
             <button type="submit" class="btn">Save Analysis</button>
         </form>

@@ -249,9 +249,9 @@ def download(request, path):
     exam.is_analyzed = True
     exam.analysis_date = datetime.now()
     patient = exam.patient
-    exam_date = exam.exam_date.strftime('%d/%m/%Y')
+    exam_date_for_name = exam.exam_date.strftime('%Y-%m-%d') if exam.exam_date else datetime.now().date().strftime('%Y-%m-%d')
     
-    file_path = f'media/{exam.exam_type}_{patient.name}_{patient.last_name}_{exam.exam_date}.pdf'
+    file_path = f'media/{exam.exam_type}_{patient.name}_{patient.last_name}_{exam_date_for_name}.pdf'
     generate_analysis_pdf(exam, patient, file_path, patient.doctor)
 
     exam.save()
