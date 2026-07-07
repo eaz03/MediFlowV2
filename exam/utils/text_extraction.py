@@ -92,6 +92,25 @@ def concatenate_pdf(files, output_path):
     with open(output_path, "wb") as output_pdf:
         merger.write(output_pdf)
 
+
+def concatenate_pdf_bytes(files):
+    """Concatenate uploaded PDF files in memory and return bytes."""
+    merger = PyPDF2.PdfMerger()
+    for file in files:
+        if hasattr(file, 'read') and file.name.lower().endswith('.pdf'):
+            # Ensure file pointer at start
+            try:
+                file.seek(0)
+            except Exception:
+                pass
+            merger.append(file)
+
+    output_stream = io.BytesIO()
+    merger.write(output_stream)
+    merger.close()
+    output_stream.seek(0)
+    return output_stream.read()
+
 def extract_folders(folders_path):
     folders = [os.path.join(folders_path, folder) for folder in os.listdir(folders_path)]
     print("folders",folders)

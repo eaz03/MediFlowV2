@@ -126,9 +126,9 @@ def new_patient(request):
 
 @login_required
 def automated_patient_extraction(request):
-    
-    Patient.objects.all().delete()
-    Exam.objects.all().delete()
+    # NOTE: removed destructive global delete to prevent catastrophic data loss.
+    # Previous implementation deleted all Patient and Exam records before
+    # processing the uploaded batch. That is unsafe and has been removed.
     if request.method == 'POST':
         try:
             patient_list = request.FILES.get('patient_list')

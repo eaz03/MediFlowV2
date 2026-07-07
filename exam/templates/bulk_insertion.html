@@ -24,6 +24,7 @@
 <div class="container">
     <h1>Upload Multiple Exams</h1>
     <p>Upload a folder where each subfolder has a patient with their exams in PDF format.</p>
+    <div id="bulkUploadFeedback" class="messages" style="display:none;"></div>
     
     <div class="form-container">
         <form id="add-exams" method="post" action="bulk-insertion" enctype="multipart/form-data">
@@ -143,7 +144,7 @@
             const filesFolders = form_data.getAll('examFolders');
             let folderStructure = [];
             for (let file of filesFolders) {
-                folderStructure.push({name: file.name, path: file.webkitRelativePath});
+                folderStructure.push({name: file.name, path: file.webkitRelativePath, size: file.size});
             }
 
             const filesCSV = form_data.getAll('patientCSV');
@@ -164,13 +165,41 @@
                 })
                 .then(response => response.json())
                 .then(data => {
+                const feedback = document.getElementById('bulkUploadFeedback');
                 if (data.status === 'success') {
-                    // Redirigir al usuario a la página de menú
+                    if (data.summary) {
+                        feedback.style.display = 'block';
+                        feedback.innerHTML = '<div class="alert alert-success"><strong>Bulk upload completed.</strong><br>' +
+                            `Folders processed: ${data.summary.processed_folders || 0}. ` +
+                            `Records created: ${data.summary.created_records || 0}.` +
+                            '</div>';
+                    }
                     window.location.href = data.redirect_url;
-                } else {
-                    // Mostrar un error o mensaje
-                    alert("Hubo un error al procesar los archivos.");
+                    return;
                 }
+
+                if (data.status === 'partial_success' && Array.isArray(data.failed_patients) && data.failed_patients.length > 0) {
+                    feedback.style.display = 'block';
+                    const summary = data.summary || {};
+                    feedback.innerHTML = '<div class="alert alert-warning"><strong>Bulk upload finished with warnings.</strong><br>' +
+                        `Folders processed: ${summary.processed_folders || 0}. ` +
+                        `Records created: ${summary.created_records || 0}. ` +
+                        `Folders failed: ${summary.failed_folders || data.failed_patients.length}.` +
+                        '<ul>' +
+                        data.failed_patients.map(item => {
+                            const folder = item.folder || 'unknown folder';
+                            const stage = item.stage ? `${item.stage}: ` : '';
+                            const error = item.error || 'patient data could not be saved';
+                            const hint = item.hint ? ` <em>${item.hint}</em>` : '';
+                            return `<li><strong>${folder}</strong> - ${stage}${error}.${hint}</li>`;
+                        }).join('') +
+                        '</ul></div>';
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    return;
+                }
+
+                feedback.style.display = 'block';
+                feedback.innerHTML = '<div class="alert alert-danger"><strong>Upload failed.</strong> The server could not process the batch. Please check the folder structure and spreadsheet, then try again.</div>';
                 })
                 .catch(error =>console.error('Error:', error));
             });

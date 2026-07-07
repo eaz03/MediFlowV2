@@ -9,6 +9,7 @@ class Exam(models.Model):
     file = models.FileField(upload_to='uploads/')
     result_analysis = models.TextField(blank=True)
     is_analyzed = models.BooleanField(default=False)
+    is_validated = models.BooleanField(default=False)
     apparatus = models.CharField(max_length=50, blank=True, null=True)
     exam_type = models.CharField(max_length=50, blank=True, null=True)
 
