@@ -2,6 +2,7 @@ from exam.models import Exam, Patient
 from exam.utils.calculate_age import calculate_age
 from datetime import datetime
 import os
+import re
 
 from django.conf import settings
 from django.core.files.base import ContentFile
@@ -51,7 +52,8 @@ def save_extracted_patient(patient_info):
                     identification=patient_info.get('id', None), 
                     age=calculate_age(patient_info.get('birthdate')) if patient_info.get('birthdate') else None,
                     date_of_birth=patient_info.get('birthdate', None),
-                    gender=patient_info.get('gender', None)
+                    gender=patient_info.get('gender', None),
+                    health_insurance=patient_info.get('health_insurance', ''),
                 )
             patient.save()
         else:
@@ -60,6 +62,7 @@ def save_extracted_patient(patient_info):
             patient.last_name = patient_info.get('last_name', patient.last_name)
             patient.age = calculate_age(patient_info.get('birthdate')) if patient_info.get('birthdate') else patient.age
             patient.date_of_birth = patient_info.get('birthdate', patient.date_of_birth)
+            patient.health_insurance = patient_info.get('health_insurance', patient.health_insurance)
             patient.save()
 
         return True, patient
@@ -88,12 +91,16 @@ def save_extracted_exam(patient, patient_info, exam_path):
 def save_merged_exam_from_bytes(patient, patient_info, pdf_bytes, folder_name=""):
     """Save merged PDF bytes to Django storage and create or update Exam."""
     filename = get_new_exam_filename(patient_info, folder_name)
-    exam = Exam.objects.filter(patient=patient, exam_date=patient_info.get('exam_date')).first()
-    if not exam:
-        exam = Exam(patient=patient, exam_date=patient_info.get('exam_date'))
-
-    exam.file.save(filename, ContentFile(pdf_bytes), save=False)
-    exam.save()
+    exam, _created = Exam.objects.get_or_create(
+        patient=patient,
+        exam_date=patient_info.get('exam_date'),
+        defaults={
+            'is_validated': True,
+        },
+    )
+    exam.patient = patient
+    exam.exam_date = patient_info.get('exam_date')
+    exam.file.save(filename, ContentFile(pdf_bytes))
     return exam
 
 def get_new_exam_path(patient_info, folder):
@@ -111,5 +118,5 @@ def get_new_exam_filename(patient_info, folder_name=""):
         safe_name = f"{patient_info.get('name','').strip()}_{patient_info.get('last_name','').strip()}_{patient_info.get('exam_date').strftime('%Y-%m-%d')}.pdf"
     except Exception:
         safe_name = f"{folder_name}_{datetime.now().strftime('%Y-%m-%d')}.pdf"
-    # sanitize
-    return safe_name.replace(' ', '_')
+    safe_name = safe_name.replace(' ', '_')
+    return re.sub(r'[\\/:*?"<>|]+', '_', safe_name)

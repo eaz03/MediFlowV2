@@ -9,6 +9,7 @@ urlpatterns = [
     path('next_exam/', ophthalmologistViews.next_exam, name="next_exam"),
     path('patient-extraction/', ophthalmologistViews.automated_patient_extraction, name="patient_extraction"),
     path('login/', ophthalmologistViews.login_view, name='login'),
+    path('register/', ophthalmologistViews.register_view, name='register'),
     path('logout/', ophthalmologistViews.logout_view, name='logout'),
     path('search/', ophthalmologistViews.search, name="search"),
     path('about/', ophthalmologistViews.about, name="about"),

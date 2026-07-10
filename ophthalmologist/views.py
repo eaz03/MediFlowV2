@@ -16,6 +16,7 @@ from django.contrib.auth import logout
 from django.contrib.auth.forms import PasswordChangeForm
 from django.core.paginator import Paginator
 from django.db import transaction
+import os
 
 from exam.utils.text_extraction import add_excel_info
 
@@ -24,6 +25,22 @@ from media.clinic_information.devices import devices
 import json
 
 # Create your views here.
+def register_view(request):
+    if request.user.is_authenticated:
+        return redirect('menu')
+
+    if request.method == 'POST':
+        form = RegisterDoctorForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Registration completed. You can now log in.')
+            return redirect('login')
+    else:
+        form = RegisterDoctorForm()
+
+    return render(request, 'register.html', {'form': form})
+
+
 def login_view(request):
     error_message = ""
     if request.method == 'POST':
@@ -56,33 +73,20 @@ def logout_view(request):
 def view_patients(request):
     searchPatient = request.GET.get('searchPatient', '')
     selected_doctor_id = request.GET.get('doctor', '')
-    
-    if request.user.is_superuser:
-        # Admin: allow filtering by doctor
-        if selected_doctor_id:
-            try:
-                patients = Patient.objects.filter(doctor_id=selected_doctor_id)
-            except:
-                patients = Patient.objects.all()
-        else:
-            patients = Patient.objects.all()
-        
-        # Get all doctors for dropdown
-        doctors = Ophthalmologist.objects.all()
-    else:
-        # Ophthalmologist: only their patients
-        doctor = request.user.ophthalmologist
-        patients = search(searchPatient, doctor)
-        doctors = None
-    
-    # Apply search filter if not admin with specific doctor selected
-    if searchPatient and not (request.user.is_superuser and selected_doctor_id):
-        if request.user.is_superuser:
-            try:
-                search_id = int(searchPatient)
-                patients = patients.filter(identification__icontains=str(search_id))
-            except ValueError:
-                patients = patients.filter(name__icontains=searchPatient) | patients.filter(last_name__icontains=searchPatient)
+
+    # Single user type: all authenticated users share the same patient view.
+    patients = Patient.objects.all()
+    doctors = Ophthalmologist.objects.all()
+
+    if selected_doctor_id:
+        patients = patients.filter(doctor_id=selected_doctor_id)
+
+    if searchPatient:
+        try:
+            search_id = int(searchPatient)
+            patients = patients.filter(identification__icontains=str(search_id))
+        except ValueError:
+            patients = patients.filter(name__icontains=searchPatient) | patients.filter(last_name__icontains=searchPatient)
 
     paginator_patients = Paginator(patients, 10)
     files = Exam.objects.all()
@@ -262,11 +266,6 @@ def delete_patient(request, patient_id):
         patient = Patient.objects.get(id=patient_id)
     except Patient.DoesNotExist:
         messages.error(request, 'Patient not found.')
-        return redirect('view_patients')
-    
-    # Security check: only allow deletion by the patient's doctor or admin
-    if not request.user.is_superuser and patient.doctor != request.user.ophthalmologist:
-        messages.error(request, 'You do not have permission to delete this patient.')
         return redirect('view_patients')
     
     if request.method == 'POST':

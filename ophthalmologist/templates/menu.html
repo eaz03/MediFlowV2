@@ -2,18 +2,58 @@
 {% load static %}
 
 {% block styles %}
-{% if request.user.is_superuser %}
 <link rel="stylesheet" href="{% static 'styles/menu-admin.css' %}">
-{% else %}
-<link rel="stylesheet" href="{% static 'styles/menu-opht.css' %}">
-{% endif %}
 {% endblock %}
 
 {% block title %}Menu{% endblock %}
 
 {% block content %}
 
-{% if request.user.is_superuser %}
+<div class="module-wrapper">
+    <a href="{% url 'view_patients' %}" class="module-container">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M4 4H8V8H4V4Z" fill="#1C2E45"/>
+            <path d="M4 10H8V14H4V10Z" fill="#1C2E45"/>
+            <path d="M4 16H8V20H4V16Z" fill="#1C2E45"/>
+            <path d="M10 4H14V8H10V4Z" fill="#1C2E45"/>
+            <path d="M10 10H14V14H10V10Z" fill="#1C2E45"/>
+            <path d="M10 16H14V20H10V16Z" fill="#1C2E45"/>
+            <path d="M16 4H20V8H16V4Z" fill="#1C2E45"/>
+            <path d="M16 10H20V14H16V10Z" fill="#1C2E45"/>
+            <path d="M16 16H20V20H16V16Z" fill="#1C2E45"/>
+        </svg>
+        <h1>Visualize Patients</h1>
+    </a>
+</div>
+
+<div class="module-wrapper">
+    <a href="{% url 'new_exam' %}" class="module-container">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M16 19H6V5H12V9H16V10H17V8L13 4H5V20H17V18H16V19ZM13 5L16 8H13V5Z" fill="#1C2E45"/>
+            <path d="M17 11H15V13H13V15H15V17H17V15H19V13H17V11Z" fill="#1C2E45"/>
+        </svg>
+        <h1>Upload Exam</h1>
+    </a>
+</div>
+
+<div class="module-wrapper">
+    <a href="{% url 'bulk_insertion' %}" class="module-container">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="23" viewBox="0 0 24 23" fill="none">
+            <path d="M17 7H14L11 4H4V17H10V20H20V10L17 7ZM11 5L13 7H11V5ZM5 16V5H10V8H13V16H5ZM19 19H11V17H14V8H16V11H19V19ZM17 10V8L19 10H17Z" fill="#1C2E45"/>
+        </svg>
+        <h1>Bulk Insertion of Exams</h1>
+    </a>
+</div>
+
+<div class="module-wrapper">
+    <a href="{% url 'statistics' %}" class="module-container">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M5 19V4H4V20H20V19H5Z" fill="#1C2E45"/>
+            <path d="M14 11C12 11 11.92 10 10 10C7.66 10 6 13 6 13V18H20V6C18 6 16.14 11 14 11Z" fill="#1C2E45"/>
+        </svg>
+        <h1>Statistics</h1>
+    </a>
+</div>
 
 <div class="module-wrapper">
     <a href="{% url 'administrator' %}" class="module-container">
@@ -28,134 +68,8 @@
             <path d="M16 10H20V14H16V10Z" fill="#1C2E45"/>
             <path d="M16 16H20V20H16V16Z" fill="#1C2E45"/>
         </svg>
-        <h1>
-            Dashboard / Manage Users
-        </h1>
+        <h1>Manage Records</h1>
     </a>
 </div>
-
-<div class="module-wrapper">
-    <a href="{% url 'new_exam' %}" class="module-container">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <path d="M16 19H6V5H12V9H16V10H17V8L13 4H5V20H17V18H16V19ZM13 5L16 8H13V5Z" fill="#1C2E45"/>
-            <path d="M17 11H15V13H13V15H15V17H17V15H19V13H17V11Z" fill="#1C2E45"/>
-        </svg>
-        <h1>
-            Upload Exam
-        </h1>
-    </a>
-</div>
-
-<div class="module-wrapper">
-    <a href="{% url 'bulk_insertion' %}" class="module-container">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="23" viewBox="0 0 24 23" fill="none">
-            <path d="M17 7H14L11 4H4V17H10V20H20V10L17 7ZM11 5L13 7H11V5ZM5 16V5H10V8H13V16H5ZM19 19H11V17H14V8H16V11H19V19ZM17 10V8L19 10H17Z" fill="#1C2E45"/>
-        </svg> 
-        <h1>
-            Bulk Insertion of Exams
-        </h1>
-    </a>
-</div>
-
-<div class="module-wrapper">
-    <a href="{% url 'new_ophthalmologist' %}" class="module-container">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <path d="M17.9 15.3C16.9 13.4 15.9 13.7 14.8 13.6C14.9 13.9 14.9 14.2 14.9 14.6C16.5 15 16.9 16.9 16.9 18V19H14.9V18H15.9C15.9 18 15.9 15.5 14.4 15.5C12.9 15.5 12.9 17.9 12.9 18H13.9V19H11.9V18C11.9 16.9 12.3 14.9 13.9 14.6C13.9 14 13.8 13.5 13.7 13.3C13.5 13.2 13.3 13 13.3 12.7C13.3 12.1 14.1 12.3 14.7 11.2C14.7 11.2 15.6 8.9 15.3 6.9H14.3C14.3 6.7 14.4 6.6 14.4 6.4C14.4 6.2 14.4 6.1 14.3 5.9H15.1C14.8 4.9 13.8 4 11.9 4C10 4 9 4.9 8.6 6H9.4C9.4 6.2 9.3 6.3 9.3 6.5C9.3 6.7 9.3 6.8 9.4 7H8.4C8.2 9 9 11.3 9 11.3C9.6 12.3 10.4 12.1 10.4 12.8C10.4 13.3 9.9 13.5 9.3 13.6C9.1 13.8 8.9 14.2 8.9 15C8.9 15.4 8.9 15.8 8.9 16.2C9.5 16.4 9.9 17 9.9 17.6C9.9 18.3 9.2 19 8.4 19C7.6 19 6.9 18.3 6.9 17.5C6.9 16.8 7.3 16.3 7.9 16.1C7.9 15.8 7.9 15.4 7.9 14.9C7.9 14.4 8 14 8.1 13.6C7.4 13.7 6.6 14 5.9 15.3C5.3 16.4 5 20 5 20H18.7C18.8 20 18.5 16.4 17.9 15.3ZM10.4 6.5C10.4 5.7 11.1 5 11.9 5C12.7 5 13.4 5.7 13.4 6.5C13.4 7.3 12.7 8 11.9 8C11.1 8 10.4 7.3 10.4 6.5Z" fill="#1C2E45"/>
-            <path d="M8.89999 17.5C8.89999 17.776 8.67599 18 8.39999 18C8.12399 18 7.89999 17.776 7.89999 17.5C7.89999 17.224 8.12399 17 8.39999 17C8.67599 17 8.89999 17.224 8.89999 17.5Z" fill="#1C2E45"/>
-        </svg>
-        <h1>
-            Add Ophthalmologist
-        </h1> 
-    </a>
-</div>
-
-<div class="module-wrapper">
-        <a href="{% url 'view_patients' %}" class="module-container">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path d="M4 4H8V8H4V4Z" fill="#1C2E45"/>
-                <path d="M4 10H8V14H4V10Z" fill="#1C2E45"/>
-                <path d="M4 16H8V20H4V16Z" fill="#1C2E45"/>
-                <path d="M10 4H14V8H10V4Z" fill="#1C2E45"/>
-                <path d="M10 10H14V14H10V10Z" fill="#1C2E45"/>
-                <path d="M10 16H14V20H10V16Z" fill="#1C2E45"/>
-                <path d="M16 4H20V8H16V4Z" fill="#1C2E45"/>
-                <path d="M16 10H20V14H16V10Z" fill="#1C2E45"/>
-                <path d="M16 16H20V20H16V16Z" fill="#1C2E45"/>
-            </svg>
-            <h1>
-                Visualize Patients
-            </h1>
-        </a>
-    </div>
-
-<div class="module-wrapper">
-    <a href="{% url 'statistics' %}" class="module-container">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <path d="M5 19V4H4V20H20V19H5Z" fill="#1C2E45"/>
-            <path d="M14 11C12 11 11.92 10 10 10C7.66 10 6 13 6 13V18H20V6C18 6 16.14 11 14 11Z" fill="#1C2E45"/>
-        </svg>
-        <h1>
-            Statistics
-        </h1>
-    </a>
-</div>
-    
-{% else %}
-<div class="opht-menu-container">
-    <div class="module-wrapper">
-        <a href="{% url 'view_patients' %}" class="module-container">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path d="M4 4H8V8H4V4Z" fill="#1C2E45"/>
-                <path d="M4 10H8V14H4V10Z" fill="#1C2E45"/>
-                <path d="M4 16H8V20H4V16Z" fill="#1C2E45"/>
-                <path d="M10 4H14V8H10V4Z" fill="#1C2E45"/>
-                <path d="M10 10H14V14H10V10Z" fill="#1C2E45"/>
-                <path d="M10 16H14V20H10V16Z" fill="#1C2E45"/>
-                <path d="M16 4H20V8H16V4Z" fill="#1C2E45"/>
-                <path d="M16 10H20V14H16V10Z" fill="#1C2E45"/>
-                <path d="M16 16H20V20H16V16Z" fill="#1C2E45"/>
-            </svg>
-            <h1>
-                View Patients
-            </h1>
-        </a>
-    </div>
-    
-    <div class="module-wrapper">
-        <a href="{% url 'new_exam' %}" class="module-container">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path d="M16 19H6V5H12V9H16V10H17V8L13 4H5V20H17V18H16V19ZM13 5L16 8H13V5Z" fill="#1C2E45"/>
-                <path d="M17 11H15V13H13V15H15V17H17V15H19V13H17V11Z" fill="#1C2E45"/>
-            </svg>
-            <h1>
-                Upload Exam
-            </h1>
-        </a>
-    </div>
-    
-    <div class="module-wrapper">
-        <a href="{% url 'bulk_insertion' %}" class="module-container">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="23" viewBox="0 0 24 23" fill="none">
-                <path d="M17 7H14L11 4H4V17H10V20H20V10L17 7ZM11 5L13 7H11V5ZM5 16V5H10V8H13V16H5ZM19 19H11V17H14V8H16V11H19V19ZM17 10V8L19 10H17Z" fill="#1C2E45"/>
-            </svg> 
-            <h1>
-                Bulk Insertion of Exams
-            </h1>
-        </a>
-    </div>
-</div>
-
-<div class="module-wrapper">
-    <a href="{% url 'statistics' %}" class="module-container">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <path d="M5 19V4H4V20H20V19H5Z" fill="#1C2E45"/>
-            <path d="M14 11C12 11 11.92 10 10 10C7.66 10 6 13 6 13V18H20V6C18 6 16.14 11 14 11Z" fill="#1C2E45"/>
-        </svg>
-        <h1>
-            Statistics
-        </h1>
-    </a>
-</div>
-{% endif %}
 
 {% endblock %}

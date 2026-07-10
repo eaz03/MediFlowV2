@@ -1,5 +1,6 @@
 from django import forms
 from .models import Patient
+from .models import Ophthalmologist
 from exam.models import Exam
 from administrator.models import CustomUser
 from django.contrib.auth.forms import AuthenticationForm
@@ -63,3 +64,50 @@ class AddPatientForm(forms.ModelForm):
         super(AddPatientForm, self).__init__(*args, **kwargs)
         self.fields['doctor'].required = False
         self.fields['health_insurance'].required = False
+
+
+class RegisterDoctorForm(forms.Form):
+    first_name = forms.CharField(max_length=30)
+    last_name = forms.CharField(max_length=30)
+    email = forms.EmailField(max_length=255)
+    password = forms.CharField(widget=forms.PasswordInput)
+    confirm_password = forms.CharField(widget=forms.PasswordInput)
+    medical_license = forms.CharField(max_length=50)
+    specialty = forms.CharField(max_length=50)
+
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        if CustomUser.objects.filter(email=email).exists():
+            raise forms.ValidationError('An account with this email already exists.')
+        return email
+
+    def clean_medical_license(self):
+        medical_license = self.cleaned_data['medical_license']
+        if Ophthalmologist.objects.filter(medical_license=medical_license).exists():
+            raise forms.ValidationError('This medical license is already registered.')
+        return medical_license
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get('password')
+        confirm_password = cleaned_data.get('confirm_password')
+        if password and confirm_password and password != confirm_password:
+            raise forms.ValidationError('Passwords do not match.')
+        return cleaned_data
+
+    def save(self):
+        ophthalmologist = Ophthalmologist.objects.create(
+            name=self.cleaned_data['first_name'],
+            last_name=self.cleaned_data['last_name'],
+            email=self.cleaned_data['email'],
+            medical_license=self.cleaned_data['medical_license'],
+            specialty=self.cleaned_data['specialty'],
+        )
+        user = CustomUser.objects.create_user(
+            email=self.cleaned_data['email'],
+            password=self.cleaned_data['password'],
+            first_name=self.cleaned_data['first_name'],
+            last_name=self.cleaned_data['last_name'],
+            ophthalmologist=ophthalmologist,
+        )
+        return user

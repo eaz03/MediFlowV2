@@ -1,5 +1,6 @@
 from fpdf import FPDF
 import pypdfium2 as pdfium
+import os
 from ophthalmologist.models import Ophthalmologist
 
 def generate_analysis_pdf(exam, patient, output_file, doctor, logo="media/clinic_information/logo_clinica.png"):
@@ -36,7 +37,7 @@ def generate_analysis_pdf(exam, patient, output_file, doctor, logo="media/clinic
     # Examination Device
     pdf.add_page()
     pdf.cell(150)
-    pdf.cell(0,10, txt=f"{exam.apparatus}", align="R")
+    pdf.cell(0, 10, f"{exam.apparatus}", 0, 0, "R")
     pdf.ln(20)
 
     # Style line
@@ -44,48 +45,50 @@ def generate_analysis_pdf(exam, patient, output_file, doctor, logo="media/clinic
 
     # Patient name and health provider
     pdf.cell(30)
-    pdf.cell(0,0,txt=f"PACIENTE: {patient.name} {patient.last_name}",align="L")
+    pdf.cell(0, 0, f"PACIENTE: {patient.name} {patient.last_name}", 0, 0, "L")
     pdf.cell(60)
-    pdf.cell(0,0,txt=f"{patient.health_insurance}", align="R")
+    pdf.cell(0, 0, f"{patient.health_insurance}", 0, 0, "R")
     pdf.ln(5)
 
     # Patient ID, age and date
     pdf.cell(30)
-    pdf.cell(txt=f"FECHA: {exam.exam_date}", align="L")
+    pdf.cell(0, 0, f"FECHA: {exam.exam_date}", 0, 0, "L")
     pdf.cell(20)
-    pdf.cell( txt=f"EDAD: {patient.age} años", align="L")
+    pdf.cell(0, 0, f"EDAD: {patient.age} años", 0, 0, "L")
     pdf.cell(20)
-    pdf.cell(txt=f"{patient.identification}", align="R")
+    pdf.cell(0, 0, f"{patient.identification}", 0, 0, "R")
     pdf.ln(20)
 
     # Style line
     pdf.line(x1=pdf_data["margin"], y1=50, x2=(pdf.w - pdf_data["margin"]), y2=50)
 
-    pdf.set_font(style=pdf_data["style"], size=pdf_data["title_size"]
-    )
+    pdf.set_font(pdf_data["font"], pdf_data["style"], pdf_data["title_size"])
 
     """ EXAMINATION INFORMATION """
 
     #pdf.cell(w=0, text=f"{exam.exam_type}",  align="C")
     pdf.ln(15)
 
-    pdf.set_font(style=pdf_data["style"],size=pdf_data["subtitle_size"])
+    pdf.set_font(pdf_data["font"], pdf_data["style"], pdf_data["subtitle_size"])
 
-    pdf.cell(w=0, txt="CONCLUSIONES",  align="L")
+    pdf.cell(0, 0, "CONCLUSIONES", 0, 0, "L")
     pdf.ln(10)
 
     # Examination results
-    pdf.set_font(size=pdf_data["text_size"])
-    pdf.multi_cell(w=0, h=(pdf_data["text_size"]/2), txt=exam.result_analysis,  align="L")
+    pdf.set_font(pdf_data["font"], "", pdf_data["text_size"])
+    pdf.multi_cell(0, pdf_data["text_size"]/2, exam.result_analysis, 0, "L")
     pdf.ln(10)
 
-    # Doctor information
-    pdf.set_font(style=pdf_data["style"],size=pdf_data["subtitle_size"])
-    pdf.cell(w=0, txt=str(doctor),  align="L")
-    pdf.ln(5)
-    pdf.cell(w=0, txt=doctor.medical_license, align="L")
-    pdf.ln(5)
-    pdf.cell(w=0, txt=doctor.specialty, align="L")
+    # Doctor information (patient.doctor can be null)
+    pdf.set_font(pdf_data["font"], pdf_data["style"], pdf_data["subtitle_size"])
+    if doctor:
+        pdf.cell(0, 0, str(doctor), 0, 0, "L")
+        pdf.ln(5)
+        pdf.cell(0, 0, doctor.medical_license, 0, 0, "L")
+        pdf.ln(5)
+        pdf.cell(0, 0, doctor.specialty, 0, 0, "L")
+    else:
+        pdf.cell(0, 0, "MEDICO: No asignado", 0, 0, "L")
 
     # Images of the examination
     exam_file = exam.file
@@ -97,6 +100,7 @@ def generate_analysis_pdf(exam, patient, output_file, doctor, logo="media/clinic
         pdf.add_page()
         pdf.image(image, x = 0, y = 30, w=200)
 
+    os.makedirs(os.path.dirname(output_file), exist_ok=True)
     pdf.output(output_file)
 
     return {"status": "success", "message": "PDF created successfully"}

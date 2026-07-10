@@ -38,9 +38,8 @@
 <div class="content-wrapper">
     <div class="pdf-container">
         {% if exam.file %}
-            <object data="{{ exam.file.url }}" type="application/pdf" width="100%" height="800">
-                <p>Your browser doesn't support the PDF visualization.</p>
-            </object>
+            <iframe src="{{ exam.file.url }}" width="100%" height="800" style="border:0;"></iframe>
+            <p><a href="{{ exam.file.url }}" target="_blank" rel="noopener">Open PDF in a new tab</a></p>
         {% else %}
             <p>PDF preview unavailable</p>
         {% endif %}

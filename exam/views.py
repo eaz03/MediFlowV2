@@ -194,10 +194,6 @@ def bulk_insertion(request):
                     if not patient_info.get('id'):
                         raise ValueError('patient ID was not detected in the PDF files')
 
-                    if not patient_info.get('exam_date'):
-                        raise ValueError('exam date was not detected in the PDF files')
-
-                    # Merge PDFs into bytes
                     merged_bytes = concatenate_pdf_bytes(uploaded_files)
 
                     # Save or update patient
@@ -250,14 +246,15 @@ def download(request, path):
     exam.analysis_date = datetime.now()
     patient = exam.patient
     exam_date_for_name = exam.exam_date.strftime('%Y-%m-%d') if exam.exam_date else datetime.now().date().strftime('%Y-%m-%d')
-    
-    file_path = f'media/{exam.exam_type}_{patient.name}_{patient.last_name}_{exam_date_for_name}.pdf'
+
+    file_name = f'{exam.exam_type}_{patient.name}_{patient.last_name}_{exam_date_for_name}.pdf'
+    file_path = os.path.join(settings.MEDIA_ROOT, file_name)
     generate_analysis_pdf(exam, patient, file_path, patient.doctor)
 
     exam.save()
 
     with open(file_path, "rb") as fh:
-        response = HttpResponse(fh.read(), content_type="applicaction/pdf")
+        response = HttpResponse(fh.read(), content_type="application/pdf")
         response['Content-Disposition'] = 'inline; filename=' + os.path.basename(file_path)
         return response
     

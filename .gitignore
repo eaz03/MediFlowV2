@@ -10,3 +10,4 @@ google_auth/
 .venv/
 **/__pycache__/
 !**/migrations/
+media/

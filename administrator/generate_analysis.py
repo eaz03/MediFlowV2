@@ -36,7 +36,7 @@ def generate_analysis_pdf(exam, output_file, doctor=Ophthalmologist(name="John",
     # Examination Device
     pdf.add_page()
     pdf.cell(150)
-    #pdf.cell(0,20, text=f"{exam.apparatus}", align="R")
+    #pdf.cell(0,20, txt=f"{exam.apparatus}", align="R")
     pdf.ln(20)
 
     # Style line
@@ -44,25 +44,24 @@ def generate_analysis_pdf(exam, output_file, doctor=Ophthalmologist(name="John",
 
     # Patient name and health provider
     pdf.cell(30)
-    pdf.cell(text=f"PACIENTE: {patient.name}",align="L")
+    pdf.cell(0, 0, f"PACIENTE: {patient.name}", 0, 0, "L")
     pdf.cell(60)
-    pdf.cell(text=f"{patient.health_insurance}", align="R")
+    pdf.cell(0, 0, f"{patient.health_insurance}", 0, 0, "R")
     pdf.ln(5)
 
     # Patient ID, age and date
     pdf.cell(30)
-    pdf.cell(text=f"FECHA: {exam.date}", align="L")
+    pdf.cell(0, 0, f"FECHA: {exam.date}", 0, 0, "L")
     pdf.cell(20)
-    pdf.cell( text=f"EDAD: {patient.age} años", align="L")
+    pdf.cell(0, 0, f"EDAD: {patient.age} años", 0, 0, "L")
     pdf.cell(20)
-    pdf.cell(text=f"{patient.id}", align="R")
+    pdf.cell(0, 0, f"{patient.id}", 0, 0, "R")
     pdf.ln(20)
 
     # Style line
     pdf.line(x1=pdf_data["margin"], y1=50, x2=(pdf.w - pdf_data["margin"]), y2=50)
 
-    pdf.set_font(style=pdf_data["style"], size=pdf_data["title_size"]
-    )
+    pdf.set_font(pdf_data["font"], pdf_data["style"], pdf_data["title_size"])
 
     """ EXAMINATION INFORMATION """
 
@@ -71,21 +70,21 @@ def generate_analysis_pdf(exam, output_file, doctor=Ophthalmologist(name="John",
 
     pdf.set_font(style=pdf_data["style"],size=pdf_data["subtitle_size"])
 
-    pdf.cell(w=0, text="CONCLUSIONES",  align="L")
+    pdf.cell(0, 0, "CONCLUSIONES", 0, 0, "L")
     pdf.ln(10)
 
     # Examination results
     pdf.set_font(size=pdf_data["text_size"])
-    pdf.multi_cell(w=0, h=(pdf_data["text_size"]/2), text=exam.result_analysis,  align="L")
+    pdf.multi_cell(0, pdf_data["text_size"]/2, exam.result_analysis, 0, "L")
     pdf.ln(10)
 
     # Doctor information
-    pdf.set_font(style=pdf_data["style"],size=pdf_data["subtitle_size"])
-    pdf.cell(w=0, text=doctor.name,  align="L")
+    pdf.set_font(pdf_data["font"], pdf_data["style"], pdf_data["subtitle_size"])
+    pdf.cell(0, 0, doctor.name, 0, 0, "L")
     pdf.ln(5)
-    pdf.cell(w=0, text=doctor.medical_license, align="L")
+    pdf.cell(0, 0, doctor.medical_license, 0, 0, "L")
     pdf.ln(5)
-    pdf.cell(w=0, text=doctor.title, align="L")
+    pdf.cell(0, 0, doctor.title, 0, 0, "L")
 
     pdf.output(output_file)
     return {"status": "success", "message": "PDF created successfully"}

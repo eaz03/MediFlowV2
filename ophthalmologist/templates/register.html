@@ -1,0 +1,56 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mediflow - Register</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="icon" href="/static/logo/logo_app.png" type="image/x-icon">
+    <link rel="stylesheet" href="{% static 'styles/login.css' %}">
+    <style>
+        .register-link {
+            margin-top: 12px;
+            text-align: center;
+        }
+        .register-link a {
+            color: #1c2e45;
+            font-weight: 500;
+        }
+        .field-errors {
+            color: #b94a48;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <div class="login-container">
+            <div class="login-text" style="width: 100%;">
+                <div class="login-name">
+                    <p>MediFlow</p>
+                </div>
+                <h4>Create account</h4>
+
+                {% if form.non_field_errors %}
+                    <div class="field-errors">{{ form.non_field_errors }}</div>
+                {% endif %}
+
+                <form class="login-form" method="post" action="{% url 'register' %}">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <div class="btn">
+                        <button type="submit" class="submit-btn">Register</button>
+                    </div>
+                    <div class="register-link">
+                        <a href="{% url 'login' %}">Already have an account? Log in</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</body>
+</html>
